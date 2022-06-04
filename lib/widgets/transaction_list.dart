@@ -1,120 +1,72 @@
+// ignore_for_file: prefer_const_constructors
+
 import 'package:flutter/material.dart';
+import 'package:intl/intl.dart';
+
 import '../module/transaction.dart';
-import 'package:intl/intl.dart'; // package for the date format
 
-// stateless widget for the display the trnasaction list
 class TransactionList extends StatelessWidget {
-  final List<Transaction> transaction;
+  final List<Transaction> transactions;
 
-  TransactionList(this.transaction);
+  TransactionList(this.transactions);
 
   @override
   Widget build(BuildContext context) {
     return Container(
-      height: 500,
-      // ListView.builder is more optimize than ListView when the list is very long
+      height: 700,
       child: ListView.builder(
-          itemCount: transaction.length,
-          // you can use the ListView insted of SinglecildListview and you can also use the listview.builer widget
-          itemBuilder: (context, index) {
-            return Card(
-              child: Row(
-                children: [
-                  Container(
-                    child: Text(
-                      '${transaction[index].amount} ₹', // this is called string interpolation
-                      style: TextStyle(
-                        fontSize: 20,
-                        fontWeight: FontWeight.w500,
-                        color: Color.fromARGB(255, 48, 216, 53),
-                      ),
-                    ),
-                    margin: EdgeInsets.symmetric(vertical: 13, horizontal: 15),
-                    padding: EdgeInsets.all(5),
-                    decoration: BoxDecoration(
-                      border: Border.all(
-                        color: Color.fromARGB(255, 44, 218, 50),
-                        width: 2,
-                      ),
+        itemBuilder: (ctx, index) {
+          return Card(
+            child: Row(
+              children: <Widget>[
+                Container(
+                  margin: EdgeInsets.symmetric(
+                    vertical: 10,
+                    horizontal: 15,
+                  ),
+                  decoration: BoxDecoration(
+                    border: Border.all(
+                      color: Theme.of(context).primaryColor,
+                      width: 2,
                     ),
                   ),
-                  Column(
-                    crossAxisAlignment: CrossAxisAlignment.start,
-                    mainAxisAlignment: MainAxisAlignment.spaceBetween,
-                    children: [
-                      Container(
-                        child: Text(transaction[index].title,
-                            style: TextStyle(
-                              fontSize: 20,
-                              fontWeight: FontWeight.w500,
-                            )),
+                  padding: EdgeInsets.all(10),
+                  child: Text(
+                    '\$${transactions[index].amount.toStringAsFixed(2)}',
+                    // ignore: prefer_const_constructors
+                    style: TextStyle(
+                      fontWeight: FontWeight.bold,
+                      fontSize: 20,
+                      color: Theme.of(context).primaryColor,
+                    ),
+                  ),
+                ),
+                Column(
+                  crossAxisAlignment: CrossAxisAlignment.start,
+                  children: <Widget>[
+                    Text(
+                      transactions[index].title,
+                      // ignore: prefer_const_constructors
+                      style: TextStyle(
+                        fontSize: 16,
+                        fontWeight: FontWeight.bold,
                       ),
-                      Container(
-                        child: Text(
-                          DateFormat.yMMMd().format(transaction[index].date),
-                          style: TextStyle(fontWeight: FontWeight.w300),
-                        ),
+                    ),
+                    Text(
+                      DateFormat.yMMMd().format(transactions[index].date),
+                      // ignore: prefer_const_constructors
+                      style: TextStyle(
+                        color: Colors.grey,
                       ),
-                    ],
-                  )
-                ],
-              ),
-            );
-          }),
-      // children: transaction.map((tx) {}).toList(),
+                    ),
+                  ],
+                ),
+              ],
+            ),
+          );
+        },
+        itemCount: transactions.length,
+      ),
     );
   }
 }
-//   @override
-//   Widget build(BuildContext context) {
-//     return Container(
-//       height: 500,
-//       child: ListView(
-//         // you can use the ListView insted of SinglecildListview and you can also use the listview.builer widget
-//         children: transaction.map((transaction[index]) {
-//           return Card(
-//             child: Row(
-//               children: [
-//                 Container(
-//                   child: Text(
-//                     '${transaction[index].amount}  ₹', // this is called string interpolation
-//                     style: TextStyle(
-//                       fontSize: 20,
-//                       fontWeight: FontWeight.w500,
-//                       color: Color.fromARGB(255, 48, 216, 53),
-//                     ),
-//                   ),
-//                   margin: EdgeInsets.symmetric(vertical: 13, horizontal: 15),
-//                   padding: EdgeInsets.all(5),
-//                   decoration: BoxDecoration(
-//                       border: Border.all(
-//                     color: Color.fromARGB(255, 44, 218, 50),
-//                     width: 2,
-//                   )),
-//                 ),
-//                 Column(
-//                   crossAxisAlignment: CrossAxisAlignment.start,
-//                   mainAxisAlignment: MainAxisAlignment.spaceBetween,
-//                   children: [
-//                     Container(
-//                       child: Text(transaction[index].title,
-//                           style: TextStyle(
-//                             fontSize: 20,
-//                             fontWeight: FontWeight.w500,
-//                           )),
-//                     ),
-//                     Container(
-//                         child: Text(
-//                       DateFormat.yMMMd().format(transaction[index].date),
-//                       style: TextStyle(fontWeight: FontWeight.w300),
-//                     ))
-//                   ],
-//                 )
-//               ],
-//             ),
-//           );
-//         }).toList(),
-//       ),
-//     );
-//   }
-// }
