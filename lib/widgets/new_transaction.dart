@@ -1,53 +1,64 @@
 import 'package:flutter/material.dart';
 
-class NewTransaction extends StatelessWidget {
+class NewTransaction extends StatefulWidget {
   final Function addTx;
-  final titleController = TextEditingController();
-  final amountController = TextEditingController();
-
-  void submit() {
-    final String etitle = titleController.text;
-    final int eamount = int.parse(amountController.text);
-
-    if (etitle.isEmpty || eamount <= 0) {
-      return;
-    }
-    addTx(etitle, eamount);
-  }
 
   NewTransaction(this.addTx);
+
+  @override
+  State<NewTransaction> createState() => _NewTransactionState();
+}
+
+class _NewTransactionState extends State<NewTransaction> {
+  final titleController = TextEditingController();
+
+  final amountController = TextEditingController();
+
+  void submitData() {
+    final enteredTitle = titleController.text;
+    final enteredAmount = double.parse(amountController.text);
+
+    if (enteredTitle.isEmpty || enteredAmount <= 0) {
+      return;
+    }
+
+    widget.addTx(
+      enteredTitle,
+      enteredAmount,
+    );
+
+    Navigator.of(context).pop();
+  }
 
   @override
   Widget build(BuildContext context) {
     return Card(
       elevation: 5,
       child: Container(
-        padding: EdgeInsets.all(15),
+        padding: EdgeInsets.all(10),
         child: Column(
           crossAxisAlignment: CrossAxisAlignment.end,
-          children: [
+          children: <Widget>[
             TextField(
-              decoration: InputDecoration(labelText: "Title"),
+              decoration: InputDecoration(labelText: 'Title'),
               controller: titleController,
-              onSubmitted: (_) => submit(),
-              // here the '_' is the not necessary for the function but, we can't use it so pass underscore
+              onSubmitted: (_) => submitData(),
               // onChanged: (val) {
               //   titleInput = val;
               // },
             ),
             TextField(
-              decoration: InputDecoration(labelText: "Amount"),
+              decoration: InputDecoration(labelText: 'Amount'),
               controller: amountController,
               keyboardType: TextInputType.number,
-              onSubmitted: (_) => submit(),
-              // onChanged: (val) {
-              //   amountInput = val;
-              // },
+              onSubmitted: (_) => submitData(),
+              // onChanged: (val) => amountInput = val,
             ),
             FlatButton(
-                onPressed: submit,
-                child: Text("Add Transaction"),
-                textColor: Color.fromARGB(255, 158, 54, 176))
+              child: Text('Add Transaction'),
+              textColor: Colors.purple,
+              onPressed: submitData,
+            ),
           ],
         ),
       ),
