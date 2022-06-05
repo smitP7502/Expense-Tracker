@@ -1,4 +1,4 @@
-# expanse_planner
+# prectise
 
 A new Flutter project.
 

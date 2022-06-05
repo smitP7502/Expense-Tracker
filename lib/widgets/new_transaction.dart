@@ -1,53 +1,100 @@
+// ignore_for_file: prefer_const_constructors
+
+import 'dart:async';
+import 'dart:ffi';
+import 'dart:math';
+
 import 'package:flutter/material.dart';
+import 'package:intl/intl.dart';
 
-class NewTransaction extends StatelessWidget {
+import '../classes/transaction.dart';
+
+class NewTransaction extends StatefulWidget {
   final Function addTx;
-  final titleController = TextEditingController();
-  final amountController = TextEditingController();
-
-  void submit() {
-    final String etitle = titleController.text;
-    final int eamount = int.parse(amountController.text);
-
-    if (etitle.isEmpty || eamount <= 0) {
-      return;
-    }
-    addTx(etitle, eamount);
-  }
 
   NewTransaction(this.addTx);
 
   @override
+  State<NewTransaction> createState() => _NewTransactionState();
+}
+
+class _NewTransactionState extends State<NewTransaction> {
+  final enteredTitle = TextEditingController();
+  final enteredAmount = TextEditingController();
+  var _selectedDate;
+
+  void SubmitData() {
+    if (enteredAmount.text.isEmpty) {
+      return;
+    }
+    String title = enteredTitle.text.toString();
+    double amount = double.parse(enteredAmount.text);
+
+    if (title.isEmpty || amount <= 0 || _selectedDate == null) {
+      return;
+    }
+
+    widget.addTx(title, amount, _selectedDate);
+
+    Navigator.of(context).pop();
+  }
+
+  void _PickDate() {
+    DateTime pick;
+    showDatePicker(
+            context: context,
+            initialDate: DateTime.now(),
+            firstDate: DateTime(2019),
+            lastDate: DateTime.now())
+        .then((pick) {
+      if (pick == null) {
+        return;
+      }
+      setState(() {
+        _selectedDate = pick;
+      });
+    });
+  }
+
+  @override
   Widget build(BuildContext context) {
     return Card(
-      elevation: 5,
+      elevation: 8,
+      margin: EdgeInsets.all(10),
       child: Container(
-        padding: EdgeInsets.all(15),
+        padding: EdgeInsets.all(10),
         child: Column(
           crossAxisAlignment: CrossAxisAlignment.end,
           children: [
             TextField(
-              decoration: InputDecoration(labelText: "Title"),
-              controller: titleController,
-              onSubmitted: (_) => submit(),
-              // here the '_' is the not necessary for the function but, we can't use it so pass underscore
-              // onChanged: (val) {
-              //   titleInput = val;
-              // },
+              decoration: InputDecoration(
+                labelText: 'Tilte',
+              ),
+              controller: enteredTitle,
+              onSubmitted: (_) => SubmitData(),
             ),
             TextField(
-              decoration: InputDecoration(labelText: "Amount"),
-              controller: amountController,
+              decoration: InputDecoration(
+                labelText: 'Amount',
+              ),
+              controller: enteredAmount,
+              onSubmitted: (_) => SubmitData(),
               keyboardType: TextInputType.number,
-              onSubmitted: (_) => submit(),
-              // onChanged: (val) {
-              //   amountInput = val;
-              // },
             ),
-            FlatButton(
-                onPressed: submit,
-                child: Text("Add Transaction"),
-                textColor: Color.fromARGB(255, 158, 54, 176))
+            RaisedButton(
+                onPressed: () => SubmitData(), child: Text('Add Transaction')),
+            Row(
+              children: [
+                Expanded(
+                    child: _selectedDate == null
+                        ? Text('No date Choosen!!')
+                        : Text(DateFormat.yMd().format(_selectedDate))),
+                TextButton(
+                  onPressed: () => _PickDate(),
+                  child: Text('Chosse Date'),
+                ),
+              ],
+            ),
           ],
         ),
       ),

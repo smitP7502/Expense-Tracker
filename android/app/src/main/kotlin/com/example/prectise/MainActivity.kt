@@ -1,4 +1,4 @@
-package com.example.expanse_planner
+package com.example.prectise
 
 import io.flutter.embedding.android.FlutterActivity
 

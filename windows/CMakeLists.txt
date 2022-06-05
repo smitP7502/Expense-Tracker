@@ -1,7 +1,7 @@
 cmake_minimum_required(VERSION 3.14)
-project(expanse_planner LANGUAGES CXX)
+project(prectise LANGUAGES CXX)
 
-set(BINARY_NAME "expanse_planner")
+set(BINARY_NAME "prectise")
 
 cmake_policy(SET CMP0063 NEW)
 
