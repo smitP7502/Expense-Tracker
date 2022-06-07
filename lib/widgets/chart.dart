@@ -1,62 +1,57 @@
 import 'package:flutter/material.dart';
 import 'package:intl/intl.dart';
 
-import './chart_bar.dart';
-import '../models/transaction.dart';
+import '../classes/transaction.dart';
+import '../widgets/chart_bar.dart';
 
 class Chart extends StatelessWidget {
-  final List<Transaction> recentTransactions;
+  final List<Transaction> _recentTransaction;
 
-  Chart(this.recentTransactions);
+  Chart(this._recentTransaction);
 
-  List<Map<String, Object>> get groupedTransactionValues {
+  List<Map<String, Object>> get _groupedTransaction {
     return List.generate(7, (index) {
-      final weekDay = DateTime.now().subtract(
-        Duration(days: index),
-      );
-      var totalSum = 0.0;
+      final weekDay = DateTime.now().subtract(Duration(days: index));
 
-      for (var i = 0; i < recentTransactions.length; i++) {
-        if (recentTransactions[i].date.day == weekDay.day &&
-            recentTransactions[i].date.month == weekDay.month &&
-            recentTransactions[i].date.year == weekDay.year) {
-          totalSum += recentTransactions[i].amount;
+      double totalSum = 0;
+
+      for (var i = 0; i < _recentTransaction.length; i++) {
+        if (weekDay.day == _recentTransaction[i].date.day &&
+            weekDay.month == _recentTransaction[i].date.month &&
+            weekDay.year == _recentTransaction[i].date.year) {
+          totalSum += _recentTransaction[i].amount;
         }
       }
 
       return {
         'day': DateFormat.E().format(weekDay).substring(0, 1),
-        'amount': totalSum,
+        'amount': totalSum
       };
     }).reversed.toList();
   }
 
-  double get totalSpending {
-    return groupedTransactionValues.fold(0.0, (sum, item) {
-      return sum + item['amount'];
+  double get TotalAmount {
+    return _groupedTransaction.fold(0, (sum, ele) {
+      double am = ele['amount'] as double;
+      return sum + am;
     });
   }
 
   @override
   Widget build(BuildContext context) {
+    print(_groupedTransaction);
+    print(TotalAmount);
     return Card(
-      elevation: 6,
-      margin: EdgeInsets.all(20),
+      margin: EdgeInsets.all(10),
       child: Padding(
-        padding: EdgeInsets.all(10),
+        padding: EdgeInsets.symmetric(vertical: 5, horizontal: 10),
         child: Row(
           mainAxisAlignment: MainAxisAlignment.spaceAround,
-          children: groupedTransactionValues.map((data) {
-            return Flexible(
-              fit: FlexFit.tight,
-              child: ChartBar(
-                data['day'],
-                data['amount'],
-                totalSpending == 0.0
-                    ? 0.0
-                    : (data['amount'] as double) / totalSpending,
-              ),
-            );
+          children: _groupedTransaction.map((gt) {
+            String title = gt['day'] as String;
+            double am = gt['amount'] as double;
+            double percent = (TotalAmount == 0 ? 0 : am / TotalAmount);
+            return ChartBar(title, am, percent);
           }).toList(),
         ),
       ),

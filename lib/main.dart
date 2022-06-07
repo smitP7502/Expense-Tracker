@@ -1,107 +1,79 @@
+// ignore_for_file: prefer_const_constructors
+
 import 'package:flutter/material.dart';
+import 'package:prectise/widgets/chart.dart';
 
+import './classes/transaction.dart';
+import './widgets/transaction_display.dart';
 import './widgets/new_transaction.dart';
-import './widgets/transaction_list.dart';
-import './widgets/chart.dart';
-import './models/transaction.dart';
 
-void main() => runApp(MyApp());
+void main() => runApp(MyHome());
 
-class MyApp extends StatelessWidget {
+class MyHome extends StatelessWidget {
+  const MyHome({Key? key}) : super(key: key);
+
   @override
   Widget build(BuildContext context) {
     return MaterialApp(
-      title: 'Personal Expenses',
+      title: 'Flutter App',
       theme: ThemeData(
-          primarySwatch: Colors.purple,
-          accentColor: Colors.amber,
-          // errorColor: Colors.red,
-          fontFamily: 'Quicksand',
-          textTheme: ThemeData.light().textTheme.copyWith(
-                title: TextStyle(
-                  fontFamily: 'OpenSans',
-                  fontWeight: FontWeight.bold,
-                  fontSize: 18,
-                ),
-                button: TextStyle(color: Colors.white),
-              ),
-          appBarTheme: AppBarTheme(
-            textTheme: ThemeData.light().textTheme.copyWith(
-                  title: TextStyle(
-                    fontFamily: 'OpenSans',
-                    fontSize: 20,
-                    fontWeight: FontWeight.bold,
-                  ),
-                ),
-          )),
-      home: MyHomePage(),
+        primarySwatch: Colors.green,
+        appBarTheme: AppBarTheme(
+          color: Colors.blue,
+          titleTextStyle: TextStyle(
+            fontFamily: 'Fjall',
+            // fontWeight: FontWeight.w600,
+            fontSize: 25,
+          ),
+        ),
+        listTileTheme: ListTileThemeData(),
+      ),
+      home: MyApp(),
     );
   }
 }
 
-class MyHomePage extends StatefulWidget {
-  // String titleInput;
-  // String amountInput;
+class MyApp extends StatefulWidget {
   @override
-  _MyHomePageState createState() => _MyHomePageState();
+  State<MyApp> createState() => _MyAppState();
 }
 
-class _MyHomePageState extends State<MyHomePage> {
-  final List<Transaction> _userTransactions = [
-    // Transaction(
-    //   id: 't1',
-    //   title: 'New Shoes',
-    //   amount: 69.99,
-    //   date: DateTime.now(),
-    // ),
-    // Transaction(
-    //   id: 't2',
-    //   title: 'Weekly Groceries',
-    //   amount: 16.53,
-    //   date: DateTime.now(),
-    // ),
+class _MyAppState extends State<MyApp> {
+  // List of the transactions
+  final List<Transaction> _transactionList = [
+    Transaction("New Shoe", 300, DateTime.now().toString(), DateTime.now()),
+    Transaction("Grocery", 150, DateTime.now().toString(), DateTime.now()),
+    Transaction("New Shoe", 300, DateTime.now().toString(), DateTime.now()),
+    Transaction("Grocery", 150, DateTime.now().toString(), DateTime.now()),
+    Transaction("New Shoe", 300, DateTime.now().toString(), DateTime.now()),
+    Transaction("Grocery", 150, DateTime.now().toString(), DateTime.now()),
+    Transaction("New Shoe", 300, DateTime.now().toString(), DateTime.now()),
+    Transaction("Grocery", 150, DateTime.now().toString(), DateTime.now()),
+    Transaction("New Shoe", 300, DateTime.now().toString(), DateTime.now()),
+    Transaction("Grocery", 150, DateTime.now().toString(), DateTime.now()),
+    Transaction("New Shoe", 300, DateTime.now().toString(), DateTime.now()),
+    Transaction("Grocery", 150, DateTime.now().toString(), DateTime.now()),
   ];
 
-  List<Transaction> get _recentTransactions {
-    return _userTransactions.where((tx) {
-      return tx.date.isAfter(
-        DateTime.now().subtract(
-          Duration(days: 7),
-        ),
-      );
-    }).toList();
-  }
-
-  void _addNewTransaction(
-      String txTitle, double txAmount, DateTime chosenDate) {
-    final newTx = Transaction(
-      title: txTitle,
-      amount: txAmount,
-      date: chosenDate,
-      id: DateTime.now().toString(),
-    );
+  void _addTransaction(String title, double amount, DateTime dateT) {
+    final newTra = Transaction(title, amount, dateT.toString(), dateT);
 
     setState(() {
-      _userTransactions.add(newTx);
+      _transactionList.add(newTra);
     });
   }
 
-  void _startAddNewTransaction(BuildContext ctx) {
+  void _showInputWidget(BuildContext ctx) {
     showModalBottomSheet(
-      context: ctx,
-      builder: (_) {
-        return GestureDetector(
-          onTap: () {},
-          child: NewTransaction(_addNewTransaction),
-          behavior: HitTestBehavior.opaque,
-        );
-      },
-    );
+        context: ctx,
+        builder: (_) {
+          return NewTransaction(_addTransaction);
+        });
   }
 
-  void _deleteTransaction(String id) {
+  void _removeTra(String id) {
     setState(() {
-      _userTransactions.removeWhere((tx) => tx.id == id);
+      _transactionList.removeWhere((tx) => tx.id == id);
     });
   }
 
@@ -109,30 +81,21 @@ class _MyHomePageState extends State<MyHomePage> {
   Widget build(BuildContext context) {
     return Scaffold(
       appBar: AppBar(
-        title: Text(
-          'Personal Expenses',
-        ),
-        actions: <Widget>[
-          IconButton(
-            icon: Icon(Icons.add),
-            onPressed: () => _startAddNewTransaction(context),
-          ),
-        ],
+        title: Text("Expanse Planner"),
+        centerTitle: true,
       ),
       body: SingleChildScrollView(
         child: Column(
-          // mainAxisAlignment: MainAxisAlignment.start,
-          crossAxisAlignment: CrossAxisAlignment.stretch,
-          children: <Widget>[
-            Chart(_recentTransactions),
-            TransactionList(_userTransactions, _deleteTransaction),
+          children: [
+            Chart(_transactionList),
+            TransactionDisplay(_transactionList, _removeTra),
           ],
         ),
       ),
       floatingActionButtonLocation: FloatingActionButtonLocation.centerFloat,
       floatingActionButton: FloatingActionButton(
+        onPressed: () => _showInputWidget(context),
         child: Icon(Icons.add),
-        onPressed: () => _startAddNewTransaction(context),
       ),
     );
   }
